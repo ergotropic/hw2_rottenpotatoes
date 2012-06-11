@@ -2,7 +2,7 @@
 %h1 All Movies
 
 = form_tag movies_path, :method => :get do
-  Include: 
+  Include:
   - @all_ratings.each do |rating|
     = rating
     = check_box_tag "ratings[#{rating}]"
@@ -11,18 +11,16 @@
 %table#movies
   %thead
     %tr
-      -# %th Movie Title
-      %th{hilite_class(@q, :title)}
-        = sort_link @q, :title, "Movie Title", {}, :id => 'title_header'
+      - highlight_title_heading = "hilite" if !params[:sort_order].nil? and 'by_title' == params[:sort_order]
+      %th{class: highlight_title_heading}= link_to "Movie Title", movies_path(sort_order: :by_title), id: 'title_header'
       %th Rating
-      -# %th Release Date
-      %th{hilite_class(@q, :release_date)}
-        = sort_link @q, :release_date, "Release Date", {}, :id => 'release_date_header'
+      - highlight_release_date_heading = "hilite" if !params[:sort_order].nil? and 'by_release_date' == params[:sort_order]
+      %th{class: highlight_release_date_heading}= link_to "Release Date", movies_path(sort_order: :by_release_date), id: 'release_date_header'
       %th More Info
   %tbody
     - @movies.each do |movie|
       %tr
-        %td= movie.title 
+        %td= movie.title
         %td= movie.rating
         %td= movie.release_date
         %td= link_to "More about #{movie.title}", movie_path(movie)
