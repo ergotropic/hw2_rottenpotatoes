@@ -7,19 +7,16 @@ class MoviesController < ApplicationController
   end
 
   def index
-    if params[:sort_order].nil?
-      if params[:ratings].nil?
-        @movies = Movie.all
-      else
-        @movies = Movie.find(:all, :conditions => { :rating => params[:ratings].keys })
-      end
-    elsif 'by_title' == params[:sort_order]
-      @movies = Movie.find(:all, :order => :title)
-    elsif 'by_release_date' == params[:sort_order]
-      @movies = Movie.find(:all, :order => :release_date)
-    end
-
+    @movies = Movie.scoped  # Get all records, but as a relation, not an array a la .all
     @all_ratings = Movie.all_ratings
+    @filtered_ratings = params[:ratings] || {}
+    if params[:sorting] && Movie.attribute_names.include?(params[:sorting])
+      @sort = params[:sorting]
+      @movies = @movies.order(params[:sorting])
+    end
+    if !@filtered_ratings.empty?
+      @movies = @movies.where(:rating  => @filtered_ratings.keys)
+    end
   end
 
   def new
